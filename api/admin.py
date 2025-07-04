@@ -1,55 +1,67 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.utils.html import format_html
-from .models import CustomUser, Item, Transaction
+from .models import CustomUser, Item, Transaction, Company, Branch, CompanyMembership
 
-@admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('id_number', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'qr_code_preview')
-    search_fields = ('id_number', 'username', 'email', 'first_name', 'last_name')
-    list_filter = ('is_staff', 'is_active', 'date_joined')
+class CompanyMembershipInline(admin.TabularInline):
+    """Inline admin for CompanyMembership."""
+    model = CompanyMembership
+    extra = 1
+    autocomplete_fields = ['user']
 
-    def qr_code_preview(self, obj):
-        if obj.qr_code:
-            return format_html('<img src="{}" width="50" height="50" />', obj.qr_code.url)
-        return "No QR Code"
-    qr_code_preview.short_description = 'QR Code'
+class CustomUserAdmin(UserAdmin):
+    """Admin configuration for CustomUser."""
+    model = CustomUser
+    list_display = ('username', 'email', 'first_name', 'last_name', 'global_user_level', 'is_staff')
+    list_filter = ('global_user_level', 'is_staff', 'is_superuser', 'groups')
+    search_fields = ('username', 'first_name', 'last_name', 'email')
+    ordering = ('username',)
+    
+    fieldsets = UserAdmin.fieldsets + (
+        ('Custom Fields', {'fields': ('global_user_level', 'id_number', 'department', 'contact_number')}),
+    )
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ('Custom Fields', {'fields': ('global_user_level', 'id_number', 'department', 'contact_number')}),
+    )
+
+class BranchInline(admin.TabularInline):
+    """Inline admin for Branch."""
+    model = Branch
+    extra = 1
+    show_change_link = True
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    """Admin configuration for Company."""
+    list_display = ('name', 'owner', 'created_at')
+    search_fields = ('name', 'owner__username')
+    list_filter = ('created_at',)
+    inlines = [BranchInline, CompanyMembershipInline]
+
+@admin.register(Branch)
+class BranchAdmin(admin.ModelAdmin):
+    """Admin configuration for Branch."""
+    list_display = ('name', 'company', 'is_active')
+    search_fields = ('name', 'company__name')
+    list_filter = ('company', 'is_active')
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('item_id', 'name', 'category', 'status', 'qr_code_preview', 'created_at')
-    list_filter = ('category', 'status', 'created_at')
-    search_fields = ('item_id', 'name', 'description')
-    readonly_fields = ('qr_code_preview',)
-    fieldsets = (
-        (None, {
-            'fields': ('item_id', 'name', 'description')
-        }),
-        ('Classification', {
-            'fields': ('category', 'status')
-        }),
-        ('QR Code', {
-            'fields': ('qr_code', 'qr_code_preview'),
-        }),
-    )
-
-    def qr_code_preview(self, obj):
-        if obj.qr_code:
-            return format_html('<img src="{}" width="100" height="100" />', obj.qr_code.url)
-        return "No QR Code"
-    qr_code_preview.short_description = 'QR Code Preview'
+    """Admin configuration for Item."""
+    list_display = ('name', 'item_id', 'branch', 'status', 'stock_quantity')
+    search_fields = ('name', 'item_id', 'branch__name')
+    list_filter = ('status', 'branch__company', 'branch')
+    readonly_fields = ('qr_code',)
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'item_name', 'user_name', 'transaction_type')
-    list_filter = ('transaction_type', 'timestamp', 'item__category')
-    search_fields = ('item__name', 'item__item_id', 'user__username', 'user__id_number')
-    date_hierarchy = 'timestamp'
+    """Admin configuration for Transaction."""
+    list_display = ('item', 'user', 'transaction_type', 'quantity', 'timestamp')
+    search_fields = ('item__name', 'user__username')
+    list_filter = ('transaction_type', 'timestamp', 'branch')
 
-    def item_name(self, obj):
-        return f"{obj.item.item_id} - {obj.item.name}"
-    item_name.short_description = 'Item'
-
-    def user_name(self, obj):
-        return f"{obj.user.id_number} - {obj.user.get_full_name()}"
-    user_name.short_description = 'User'
+# Unregister the old UserAdmin if CustomUser is the primary user model
+# and then register the new one.
+# Note: The base User model is automatically registered by Django,
+# so we only need to register our custom user admin.
+admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(CompanyMembership)

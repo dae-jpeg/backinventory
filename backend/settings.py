@@ -46,17 +46,20 @@ INSTALLED_APPS = [
     'rest_framework',  # if you're using DRF
     'rest_framework_simplejwt.token_blacklist',  # Required for token rotation
     'api',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'api.middleware.RegionMiddleware',  # Region identification middleware
+    'api.middleware.RegionValidationMiddleware',  # Region access validation
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True  # Dev only
@@ -185,16 +188,27 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
         },
     },
     'handlers': {
         'console': {
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
         'file': {
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'debug.log',
             'formatter': 'verbose',
@@ -203,14 +217,19 @@ LOGGING = {
     'loggers': {
         '': {  # Root logger
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
         },
         'api': {  # App logger
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': False,
         },
         'django.db.backends': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,

@@ -1,24 +1,12 @@
-# Django and REST framework
-Django==5.2.1
-djangorestframework==3.14.0
+Django==5.0.4
+djangorestframework==3.15.1
 django-cors-headers==4.3.1
-
-# JWT Authentication
-djangorestframework-simplejwt==5.3.1
-
-# Database
-psycopg2-binary==2.9.9
-
-# Image Processing
-Pillow==10.2.0
+psycopg2-binary==2.9.10
+Pillow==11.2.1
 qrcode==7.4.2
-
-# Environment Variables
-python-dotenv==1.0.1
-
-# Development Tools
-django-debug-toolbar==4.3.0
-
-# Production
-gunicorn==21.2.0
-whitenoise==6.6.0 
+python-barcode==0.15.1
+djangorestframework-simplejwt==5.3.1
+gunicorn==22.0.0
+whitenoise==6.6.0
+dj-database-url==2.1.0
+drf-nested-routers==0.94.0 
