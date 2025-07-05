@@ -27,11 +27,7 @@ class Migration(migrations.Migration):
             name='name',
             field=models.CharField(max_length=100),
         ),
-        migrations.AlterField(
-            model_name='customuser',
-            name='branch',
-            field=models.ForeignKey(blank=True, help_text='The branch this user belongs to (for Managers and Users).', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='staff', to='api.branch'),
-        ),
+        # Branch field already added in previous migration
         migrations.AlterField(
             model_name='customuser',
             name='id_number',

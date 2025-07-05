@@ -40,10 +40,7 @@ class Migration(migrations.Migration):
             name='id_number',
             field=models.CharField(default='00000000', help_text='Required. Enter a unique ID number (digits only).', max_length=20, unique=True, validators=[django.core.validators.RegexValidator(message='ID number must contain only digits', regex='^[0-9]+$')]),
         ),
-        migrations.RemoveField(
-            model_name='customuser',
-            name='branch',
-        ),
+        # Branch field removal skipped - field was added in previous migration
         migrations.RemoveField(
             model_name='customuser',
             name='user_level',
