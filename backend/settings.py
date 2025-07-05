@@ -141,10 +141,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # WhiteNoise configuration for static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Add static files directories
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# Add static files directories (only if the directory exists)
+STATICFILES_DIRS = []
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
