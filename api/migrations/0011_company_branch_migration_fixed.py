@@ -8,18 +8,7 @@ def create_default_company_and_assign_regions(apps, schema_editor):
     Region = apps.get_model('api', 'Region')
     CustomUser = apps.get_model('api', 'CustomUser')
     
-    # Create a default company if none exists
-    default_company, created = Company.objects.get_or_create(
-        name='Default Company',
-        defaults={
-            'id': uuid.uuid4(),
-            'description': 'Default company for existing data',
-            'created_at': timezone.now(),
-            'updated_at': timezone.now(),
-        }
-    )
-    
-    # Get or create a default user for the company owner
+    # Get or create a default user for the company owner FIRST
     default_user, user_created = CustomUser.objects.get_or_create(
         username='default_admin',
         defaults={
@@ -33,8 +22,20 @@ def create_default_company_and_assign_regions(apps, schema_editor):
         }
     )
     
-    # Set the default user as company owner if not already set
-    if not default_company.owner_id:
+    # Create a default company with the owner already set
+    default_company, created = Company.objects.get_or_create(
+        name='Default Company',
+        defaults={
+            'id': uuid.uuid4(),
+            'description': 'Default company for existing data',
+            'created_at': timezone.now(),
+            'updated_at': timezone.now(),
+            'owner': default_user,  # Set the owner during creation
+        }
+    )
+    
+    # If company already existed, set the owner
+    if not created and not default_company.owner_id:
         default_company.owner = default_user
         default_company.save()
     
