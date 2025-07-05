@@ -22,7 +22,6 @@ class Migration(migrations.Migration):
             name='customuser',
             unique_together=set(),
         ),
-        # RemoveField operations skipped - fields don't exist in current models
         migrations.AddField(
             model_name='customuser',
             name='global_user_level',
@@ -33,7 +32,6 @@ class Migration(migrations.Migration):
             name='id_number',
             field=models.CharField(default='00000000', help_text='Required. Enter a unique ID number (digits only).', max_length=20, unique=True, validators=[django.core.validators.RegexValidator(message='ID number must contain only digits', regex='^[0-9]+$')]),
         ),
-        # RemoveField operations skipped - fields don't exist in current models
         migrations.CreateModel(
             name='CompanyMembership',
             fields=[
@@ -49,4 +47,4 @@ class Migration(migrations.Migration):
                 'unique_together': {('user', 'company')},
             },
         ),
-    ]
+    ] 

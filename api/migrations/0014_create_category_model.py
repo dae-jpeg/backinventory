@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('api', '0013_alter_customuser_options_and_more'),
+        ('api', '0013_alter_customuser_options_and_more_fixed'),
     ]
     operations = [
         migrations.CreateModel(
