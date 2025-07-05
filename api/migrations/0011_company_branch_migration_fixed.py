@@ -67,6 +67,24 @@ class Migration(migrations.Migration):
             ],
         ),
         
+        # Create the Branch model
+        migrations.CreateModel(
+            name='Branch',
+            fields=[
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)),
+                ('name', models.CharField(max_length=100)),
+                ('description', models.TextField(blank=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='branches', to='api.company')),
+            ],
+            options={
+                'verbose_name': 'Branch',
+                'verbose_name_plural': 'Branches',
+                'ordering': ['company', 'name'],
+            },
+        ),
+        
         # Add company_id to regions (nullable first)
         migrations.AddField(
             model_name='region',
