@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0011_company_branch_migration'),
+        ('api', '0011_company_branch_migration_fixed'),
     ]
 
     operations = [
