@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0014_create_category_model'),
+        ('api', '0011_complete_setup'),
     ]
 
     operations = [
