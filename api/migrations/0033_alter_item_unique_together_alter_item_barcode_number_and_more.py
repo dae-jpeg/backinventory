@@ -10,10 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='item',
-            unique_together={('branch', 'barcode_number')},
-        ),
         migrations.AlterField(
             model_name='item',
             name='barcode_number',

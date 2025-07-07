@@ -9,17 +9,22 @@ class IsBossDeveloper(permissions.BasePermission):
 
 class IsCompanyOwner(permissions.BasePermission):
     """
-    Allows access only to the owner of the company object.
-    Assumes the view is for a single company context.
+    Allows access only to users with 'OWNER' role in the company.
+    Checks company membership role instead of the owner field.
     """
+    def has_permission(self, request, view):
+        # For list views or when object is not available
+        # Check if user has 'OWNER' role in any company
+        return request.user and request.user.is_authenticated and request.user.company_memberships.filter(role='OWNER').exists()
+
     def has_object_permission(self, request, view, obj):
-        # For Company objects, check if the user is the owner.
         from .models import Company
+        # For Company objects, check if the user has 'OWNER' role
         if isinstance(obj, Company):
-            return obj.owner == request.user
-        # For objects related to a company (like Branch), check the company's owner.
+            return obj.members.filter(user=request.user, role='OWNER').exists()
+        # For objects related to a company (like Branch), check the company membership
         if hasattr(obj, 'company'):
-            return obj.company.owner == request.user
+            return obj.company.members.filter(user=request.user, role='OWNER').exists()
         return False
 
 class IsSupervisor(permissions.BasePermission):
